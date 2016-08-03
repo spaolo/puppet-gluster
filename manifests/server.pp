@@ -178,7 +178,7 @@ class gluster::server(
 	service { "${::gluster::params::service_glusterd}":
 		enable => true,		# start on boot
 		ensure => running,	# ensure it stays running
-		hasstatus => false,	# FIXME: BUG: https://bugzilla.redhat.com/show_bug.cgi?id=836007
+		hasstatus => "${::gluster::params::server_init_has_status}",    # FIXME: BUG: https://bugzilla.redhat.com/show_bug.cgi?id=836007
 		hasrestart => true,	# use restart, not start; stop
 	}
 }
