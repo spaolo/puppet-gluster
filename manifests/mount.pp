@@ -84,7 +84,7 @@ define gluster::mount(
 	# TODO: review shorewall rules against nfs fstype mount option
 	if $shorewall {
 		$safename = regsubst("${name}", '/', '_', 'G')	# make /'s safe
-		@@shorewall::rule { "glusterd-management-${fqdn}-${safename}":
+		@@shorewall::rule { "glusterd-management-${::gluster::params::gluster_fqdn}-${safename}":
 		#@@shorewall::rule { "glusterd-management-${volume}-${fqdn}":
 			action => 'ACCEPT',
 			source => '',	# override this on collect...
@@ -99,7 +99,7 @@ define gluster::mount(
 
 		# wrap shorewall::rule in a fake type so that we can add $match
 		#@@shorewall::rule { "gluster-volume-${fqdn}-${safename}":
-		@@gluster::rulewrapper { "gluster-volume-${fqdn}-${safename}":
+		@@gluster::rulewrapper { "gluster-volume-${::gluster::params::gluster_fqdn}-${safename}":
 			action => 'ACCEPT',
 			source => '',	# override this on collect...
 			source_ips => ["${valid_ip}"],

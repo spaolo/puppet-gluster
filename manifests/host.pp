@@ -37,7 +37,7 @@ define gluster::host(
 	Gluster::Host[$name] -> Service["${::gluster::params::service_glusterd}"]	# glusterd requires host
 
 	# if we're on itself
-	if "${fqdn}" == "${name}" {
+	if "${::gluster::params::gluster_fqdn}" == "${name}" {
 
 		$valid_ip = "${ip}" ? {
 			'' => "${::gluster_host_ip}" ? {	# smart fact...
@@ -54,7 +54,7 @@ define gluster::host(
 		class { '::gluster::host::data':
 			#name => $name,
 			ip => "${valid_ip}",
-			fqdn => "${fqdn}",
+			fqdn => "${::gluster::params::gluster_fqdn}",
 		}
 
 		# don't purge the uuid file generated within
@@ -212,7 +212,7 @@ define gluster::host(
 
 	# vrrp...
 	$vrrp = $::gluster::server::vrrp
-	if ( "${fqdn}" == "${name}" ) and $vrrp {
+	if ( "${::gluster::params::gluster_fqdn}" == "${name}" ) and $vrrp {
 
 		$vip = $::gluster::server::vip
 		if ! ($vip =~ /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/) {
@@ -279,7 +279,7 @@ define gluster::host(
 			keepalived::vrrp { 'VI_GLUSTER':	# TODO: groups!
 				state => "${fqdns[0]}" ? {	# first in list
 					'' => 'MASTER',		# list is empty
-					"${fqdn}" => 'MASTER',	# we are first!
+					"${::gluster::params::gluster_fqdn}" => 'MASTER',	# we are first!
 					default => 'BACKUP',	# other in list
 				},
 				interface => "${if}",
@@ -288,7 +288,7 @@ define gluster::host(
 				# label ethX:1 for first VIP ethX:2 for second...
 				ipaddress => "${vip}/${cidr} dev ${if} label ${if}:1",
 				# FIXME: this limits puppet-gluster to 256 hosts maximum
-				priority => inline_template("<%= 255 - (@fqdns.index('${fqdn}') or 0) %>"),
+				priority => inline_template("<%= 255 - (@fqdns.index('${::gluster::params::gluster_fqdn}') or 0) %>"),
 				routerid => 42,	# TODO: support configuring it!
 				advertint => 3,	# TODO: support configuring it!
 				password => "${p}",
@@ -302,7 +302,7 @@ define gluster::host(
 
 	# firewalling...
 	$shorewall = $::gluster::server::shorewall
-	if ( "${fqdn}" == "${name}" ) and $shorewall {
+	if ( "${::gluster::params::gluster_fqdn}" == "${name}" ) and $shorewall {
 		$zone = $::gluster::server::zone	# firewall zone
 		$ips = $::gluster::server::ips		# override host ip list
 

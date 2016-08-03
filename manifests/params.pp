@@ -81,10 +81,10 @@ class gluster::params(
 
 	# A failed or missing /etc/fstab entry should not cause the system to hang.
 	$misc_mount_nofail = 'nofail',
+ 	$gluster_domain = $::domain,
 	# FIXME: BUG: https://bugzilla.redhat.com/show_bug.cgi?id=836007
 	#seems solved in 2012-08-28 and screws up things on debian because package name and process name differs
 	$server_init_has_status = false,
-
 
 	# comment...
 	$comment = ''
@@ -117,6 +117,12 @@ class gluster::params(
 			ensure => present,
 		}
 	}
+	#this because some need to run gluster in a dns domain different from primary fqdn
+	$gluster_fqdn = $gluster_domain ? {
+                        $::domain => $fqdn,
+                        default => "${hostname}.${gluster_domain}"
+                        }
+
 }
 
 # vim: ts=8

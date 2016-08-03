@@ -104,11 +104,11 @@ class gluster::simple(
 		shorewall => $shorewall,
 	}
 
-	if "${::fqdn}" == '' {
-		fail('Your $fqdn is empty. Please check your DNS settings.')
+	if "${::gluster::params::gluster_fqdn}" == '' {
+		fail('Your $::gluster::params::gluster_fqdn is empty. Please check your DNS settings.')
 	}
 
-	@@gluster::host { "${::fqdn}":
+	@@gluster::host { "${::gluster::params::gluster_fqdn}":
 	}
 	Gluster::Host <<||>>
 
@@ -122,8 +122,8 @@ class gluster::simple(
 	validate_re("${count}", '^\d+$')	# ensure this is a positive int
 
 	# here some wizardry happens...
-	if has_key($brick_params, "${::fqdn}") {
-		$brick_params_list = $brick_params["${::fqdn}"]
+	if has_key($brick_params, "${::gluster::params::gluster_fqdn}") {
+		$brick_params_list = $brick_params["${::gluster::params::gluster_fqdn}"]
 	} else {
 		$brick_params_list = []
 	}
@@ -143,8 +143,8 @@ class gluster::simple(
 
 	$brick_params_names = "${valid_count}" ? {
 		# TODO: should we use the same pattern for 1 or many ?
-		'1' => ["${::fqdn}:${valid_path}"],
-		default => split(inline_template("<%= (1..@valid_count.to_i).collect{|i| '${::fqdn}:${valid_path}brick' + i.to_s.rjust(7, '0') + '/' }.join(',') %>"), ','),
+		'1' => ["${::gluster::params::gluster_fqdn}:${valid_path}"],
+		default => split(inline_template("<%= (1..@valid_count.to_i).collect{|i| '${::gluster::params::gluster_fqdn}:${valid_path}brick' + i.to_s.rjust(7, '0') + '/' }.join(',') %>"), ','),
 	}
 
 	validate_array($brick_params_list)
@@ -158,7 +158,7 @@ class gluster::simple(
 	$yaml = inline_template("<%= (0..@valid_count.to_i-1).inject(Hash.new) { |h,i| {@brick_params_names[i] => (((i < @valid_brick_params_defaults.length) and @valid_brick_params_defaults[i].is_a?(Hash)) ? @valid_brick_params_defaults[i] : {}).merge((i < @brick_params_list.length) ? @brick_params_list[i] : {})}.merge(h) }.to_yaml %>")
 	$hash = parseyaml($yaml)
 	create_resources('@@gluster::brick', $hash, $valid_brick_param_defaults)
-	#@@gluster::brick { "${::fqdn}:${valid_path}":
+	#@@gluster::brick { "${::gluster::params::gluster_fqdn}:${valid_path}":
 	#	areyousure => true,
 	#}
 	Gluster::Brick <<||>>

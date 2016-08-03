@@ -204,10 +204,10 @@ define gluster::volume(
 	# we error we should rmdir any empty volume dirs to keep it pristine...
 	# TODO: this should be a gluster bug... we must hope it doesn't happen!
 	# maybe related to: https://bugzilla.redhat.com/show_bug.cgi?id=835494
-	$rmdir_volume_dirs = sprintf("/bin/rmdir '%s'", inline_template("<%= @valid_bricks.find_all{|x| x.split(':')[0] == '${fqdn}' }.collect {|y| y.split(':')[1].chomp('/')+'/${name}/' }.join('\' \'') %>"))
+	$rmdir_volume_dirs = sprintf("/bin/rmdir '%s'", inline_template("<%= @valid_bricks.find_all{|x| x.split(':')[0] == '${::gluster::params::gluster_fqdn}' }.collect {|y| y.split(':')[1].chomp('/')+'/${name}/' }.join('\' \'') %>"))
 
 	# get the list of bricks fqdn's that don't have our fqdn
-	$others = inline_template("<%= @valid_bricks.find_all{|x| x.split(':')[0] != '${fqdn}' }.collect {|y| y.split(':')[0] }.join(' ') %>")
+	$others = inline_template("<%= @valid_bricks.find_all{|x| x.split(':')[0] != '${::gluster::params::gluster_fqdn}' }.collect {|y| y.split(':')[0] }.join(' ') %>")
 
 	$fping = sprintf("${::gluster::params::program_fping} -q %s", $others)
 	$status = sprintf("${::gluster::params::program_gluster} peer status --xml | ${vardir}/xml.py connected %s", $others)
@@ -360,7 +360,7 @@ define gluster::volume(
 
 		# NOTE: we need to add the $fqdn so that exported resources
 		# don't conflict... I'm not sure they should anyways though
-		@@shorewall::rule { "gluster-volume-${name}-${fqdn}":
+		@@shorewall::rule { "gluster-volume-${name}-${::gluster::params::gluster_fqdn}":
 			action => 'ACCEPT',
 			source => "${zone}",	# override this on collect...
 			source_ips => $source_ips,

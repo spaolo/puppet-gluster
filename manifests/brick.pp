@@ -381,7 +381,7 @@ define gluster::brick(
 	}
 
 	# if we're on itself, and we have a real device to work with
-	if (type3x($dev) != 'boolean') and ("${fqdn}" == "${host}") {
+	if (type3x($dev) != 'boolean') and ("${::gluster::params::gluster_fqdn}" == "${host}") {
 
 		# partitioning...
 		if $partition {
@@ -521,7 +521,7 @@ define gluster::brick(
 			}
 		}
 
-	} elsif ((type3x($dev) == 'boolean') and (! $dev)) and ("${fqdn}" == "${host}") {
+	} elsif ((type3x($dev) == 'boolean') and (! $dev)) and ("${::gluster::params::gluster_fqdn}" == "${host}") {
 
 		# ensure the full path exists!
 		# TODO: is the mkdir needed ?
