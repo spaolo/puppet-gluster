@@ -29,6 +29,7 @@ define gluster::mount(
 	$shorewall = false,
 	$owner = '',		# mount owner
 	$group = '',		# mount group
+	$mount_options=''	# specify mount options
 ) {
 	include gluster::params
 
@@ -189,7 +190,7 @@ define gluster::mount(
 		ensure => $mounted_bool,
 		device => "${server}",
 		fstype => "${valid_type}",
-		options => "defaults,_netdev,${rw_bool}",	# TODO: will $suid_bool work with gluster ?
+		options => "defaults,_netdev,${rw_bool},${mount_options}",	# TODO: will $suid_bool work with gluster ?
 		dump => '0',		# fs_freq: 0 to skip file system dumps
 		pass => '0',		# fs_passno: 0 to skip fsck on boot
 		require => [
