@@ -27,6 +27,7 @@ define gluster::volume(
 	$layout = '',		# brick layout to use (default, chained, etc...)
 	$vip = '',		# vip of the cluster (optional but recommended)
 	$ping = true,		# do we want to include fping checks ?
+	$install_ping = true,	# do we want to leave fping being installed from other module ?
 	$settle = true,		# do we want to run settle checks ?
 	$again = true,		# do we want to use Exec['again'] ?
 	$start = undef		# start volume ? true, false (stop it) or undef
@@ -39,7 +40,9 @@ define gluster::volume(
 	include gluster::params
 	include gluster::volume::base
 	if $ping {
-		include gluster::volume::ping
+		if $install_ping {
+			include gluster::volume::ping
+		}
 	}
 
 	#$vardir = $::gluster::vardir::module_vardir	# with trailing slash
