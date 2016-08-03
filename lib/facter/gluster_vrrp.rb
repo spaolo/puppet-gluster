@@ -159,9 +159,12 @@ if not(ipfile.nil?) and File.exist?(ipfile)
 	# skip over ip that doesn't match (security!!)
 	if ipregexp.match(ip)
 
+		awk = `which awk 2> /dev/null`.chomp
 		# TODO: replace with system-getifaddrs if i can get it working!
-		cmd = "/sbin/ip -o a show to #{ip} | /bin/awk '{print $2}'"
+		cmd = "/sbin/ip -o a show to #{ip} | "+awk+" '{print $2}'"
 		interface = `#{cmd}`.strip
+		#facter replaces . and - with _ in inteface names
+		fact_interface = interface.dup.tr(".","_").tr('-','_')
 		if $?.exitstatus == 0 and interface.length > 0
 
 			Facter.add('gluster_vrrp_interface') do
@@ -172,7 +175,7 @@ if not(ipfile.nil?) and File.exist?(ipfile)
 			end
 
 			# lookup from fact
-			netmask = Facter.value('netmask_'+interface.gsub('-','_'))
+			netmask = Facter.value('netmask_'+fact_interface)
 			if netmaskregexp.match(netmask)
 
 				Facter.add('gluster_vrrp_netmask') do
