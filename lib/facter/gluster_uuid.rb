@@ -86,7 +86,7 @@ if not(module_vardir.nil?) and File.directory?(module_vardir)
 		if uuidgen == ''
 			uuidgen = '/usr/bin/uuidgen'
 		end
-		result = system(uuidgen + " > '" + uuidfile + "'")
+		result = system(uuidgen + " 2>/dev/null > '" + uuidfile + "'")
 		if not(result)
 			# TODO: print warning
 		end

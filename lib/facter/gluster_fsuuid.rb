@@ -114,7 +114,7 @@ if not(valid_brickdir.nil?) and File.directory?(valid_brickdir)
 					if uuidgen == ''
 						uuidgen = '/usr/bin/uuidgen'
 					end
-					result = system(uuidgen + " > '" + uuidfile + "'")
+					result = system(uuidgen + "2> /dev/null > '" + uuidfile + "'")
 					if not(result)
 						# TODO: print warning
 					end
