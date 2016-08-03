@@ -17,5 +17,8 @@ gluster::params::misc_gluster_reload: '/usr/sbin/service glusterfs-server restar
 
 # Debian based OS use nobootwait whereas Fedora based OS use nofail.
 gluster::params::misc_mount_nofail: 'nobootwait'
+# FIXME: BUG: https://bugzilla.redhat.com/show_bug.cgi?id=836007
+#seems solved in 2012-08-28 and screws up things on debian because package name and process name differs
+gluster::params::server_init_has_status: 'true'
 
 # vim: ts=8
